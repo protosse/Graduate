@@ -32,3 +32,4 @@ brew_install() {
 
 brew_install "swiftlint"
 brew_install "swiftformat"
+brew_install "xcbeautify"

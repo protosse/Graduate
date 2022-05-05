@@ -63,8 +63,8 @@ public class Database {
     }
 }
 
-extension Database {
-    public func syncPapers(_ papers: [Paper]) throws {
+public extension Database {
+    func syncPapers(_ papers: [Paper]) throws {
         try dbWriter.write { db in
             for var paper in papers {
                 if try paper.exists(db) {
@@ -98,7 +98,7 @@ extension Database {
         }
     }
 
-    public func papers() -> [Paper] {
+    func papers() -> [Paper] {
         var papers: [Paper] = []
         try? dbWriter.read { db in
             papers = try Paper.fetchAll(db)

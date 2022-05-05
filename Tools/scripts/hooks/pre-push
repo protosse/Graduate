@@ -2,4 +2,25 @@
 
 echo "Running pre-push Hook"
 
+which -s xcbeautify
+if [ $? != 0 ] ; then
+    echo "❌ xcbeautify is not installed"
+    exit 0
+fi
+
+echo "Running Tests"
+set -o pipefail && env NSUnbufferedIO=YES xcodebuild \
+-workspace "Graduate.xcworkspace" \
+-scheme "Graduate-Workspace" \
+-sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 13' \
+-retry-tests-on-failure \
+test | xcbeautify
+
+if [ $? -ne 0 ]; then
+    echo "❌ Tests finished with errors"
+    exit 1
+else
+    echo "✅ Tests finished. Pushing the changed..."
+fi
+
 # exit 1

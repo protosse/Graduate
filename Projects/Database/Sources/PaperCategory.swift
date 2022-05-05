@@ -13,15 +13,15 @@ extension PaperCategory: Codable, FetchableRecord, MutablePersistableRecord {
         static let name = Column(CodingKeys.name)
     }
 
-    mutating public func didInsert(with rowID: Int64, for column: String?) {
+    public mutating func didInsert(with rowID: Int64, for _: String?) {
         id = rowID
     }
 }
 
-extension PaperCategory {
-    public static let pivots = hasMany(PaperCategoryPivot.self)
-    public static let papers = hasMany(Paper.self, through: pivots, using: PaperCategoryPivot.paper)
-    public var papersRequest: QueryInterfaceRequest<Paper> {
+public extension PaperCategory {
+    static let pivots = hasMany(PaperCategoryPivot.self)
+    static let papers = hasMany(Paper.self, through: pivots, using: PaperCategoryPivot.paper)
+    var papersRequest: QueryInterfaceRequest<Paper> {
         request(for: PaperCategory.papers)
     }
 }

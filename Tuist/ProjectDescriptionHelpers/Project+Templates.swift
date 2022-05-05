@@ -1,7 +1,7 @@
 import ProjectDescription
 
-extension Project {
-    public static func common(
+public extension Project {
+    static func common(
         name: String,
         product: Product,
         organizationName: String,
@@ -15,6 +15,8 @@ extension Project {
         packages: [Package] = [],
         integrations: [String] = []
     ) -> Project {
+        var targets = [Target]()
+
         let appTarget = Target(
             name: name,
             platform: .iOS,
@@ -25,32 +27,36 @@ extension Project {
             sources: sources,
             resources: resources,
             dependencies: dependencies
-                + module.map({
+                + module.map {
                     .project(target: $0, path: .relativeToRoot("Projects/\($0)"))
-                })
-                + integrations.map({
+                }
+                + integrations.map {
                     .project(target: $0, path: .relativeToRoot("Integrations/\($0)"))
-                })
+                }
         )
+        targets.append(appTarget)
 
-        let testTarget = Target(
-            name: "\(name)Tests",
-            platform: .iOS,
-            product: .unitTests,
-            bundleId: "com.\(organizationName).\(name)Tests",
-            deploymentTarget: deploymentTarget,
-            infoPlist: .default,
-            sources: testSources,
-            dependencies: [
-                .target(name: "\(name)"),
-            ]
-        )
+        if let testSources = testSources {
+            let testTarget = Target(
+                name: "\(name)Tests",
+                platform: .iOS,
+                product: .unitTests,
+                bundleId: "com.\(organizationName).\(name)Tests",
+                deploymentTarget: deploymentTarget,
+                infoPlist: .default,
+                sources: testSources,
+                dependencies: [
+                    .target(name: "\(name)"),
+                ]
+            )
+            targets.append(testTarget)
+        }
 
         return Project(
             name: name,
             organizationName: organizationName,
             packages: packages,
-            targets: [appTarget, testTarget]
+            targets: targets
         )
     }
 }

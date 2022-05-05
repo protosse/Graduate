@@ -34,14 +34,14 @@ extension JSON {
 
 extension AnyPublisher where Output == Response {
     func mapApiResponse() -> AnyPublisher<ApiResponse, NetError> {
-        return tryMap({ try $0.mapApiResponse() })
-            .mapError({ NetError($0) })
+        return tryMap { try $0.mapApiResponse() }
+            .mapError { NetError($0) }
             .eraseToAnyPublisher()
     }
 
     func mapSwiftyJSON() -> AnyPublisher<JSON, NetError> {
-        return map({ $0.mapSwiftyJSON() })
-            .mapError({ NetError($0) })
+        return map { $0.mapSwiftyJSON() }
+            .mapError { NetError($0) }
             .eraseToAnyPublisher()
     }
 }

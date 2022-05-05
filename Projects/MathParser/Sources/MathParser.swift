@@ -34,7 +34,7 @@ public class MathParser {
         let attr = NSMutableAttributedString(attributedString: re)
         let str = attr.string
 
-        var cutLength: Int = 0
+        var cutLength = 0
         let label = MTMathUILabel()
         label.contentInsets = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
         regexMath.enumerateMatches(in: str, range: NSRange(location: 0, length: str.count)) { result, _, _ in
@@ -96,12 +96,12 @@ public class MathParser {
     }
 }
 
-extension String {
-    public func subString(withNSRange range: NSRange) -> String {
+public extension String {
+    func subString(withNSRange range: NSRange) -> String {
         return subString(start: range.location, end: range.location + range.length)
     }
 
-    public func subString(start: Int, end: Int) -> String {
+    func subString(start: Int, end: Int) -> String {
         #if swift(>=5.0)
             let startIndex = String.Index(utf16Offset: start, in: self)
             let endIndex = String.Index(utf16Offset: end, in: self)

@@ -22,21 +22,21 @@ extension Paper: Codable, FetchableRecord, MutablePersistableRecord {
         static let content = Column(CodingKeys.content)
     }
 
-    mutating public func didInsert(with rowID: Int64, for column: String?) {
+    public mutating func didInsert(with rowID: Int64, for _: String?) {
         id = rowID
     }
 }
 
-extension Paper {
-    public static let pivots = hasMany(PaperCategoryPivot.self)
-    public static let categories = hasMany(PaperCategory.self, through: pivots, using: PaperCategoryPivot.paperCategory)
-    public var categoriesRequest: QueryInterfaceRequest<PaperCategory> {
+public extension Paper {
+    static let pivots = hasMany(PaperCategoryPivot.self)
+    static let categories = hasMany(PaperCategory.self, through: pivots, using: PaperCategoryPivot.paperCategory)
+    var categoriesRequest: QueryInterfaceRequest<PaperCategory> {
         request(for: Paper.categories)
     }
 }
 
-extension DerivableRequest where RowDecoder == Paper {
-    public func orderByName() -> Self {
+public extension DerivableRequest where RowDecoder == Paper {
+    func orderByName() -> Self {
         order(Paper.Columns.title.collating(.localizedCaseInsensitiveCompare))
     }
 }

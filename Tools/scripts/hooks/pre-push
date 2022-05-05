@@ -1,0 +1,5 @@
+#!/bin/sh
+
+echo "Running pre-push Hook"
+
+# exit 1

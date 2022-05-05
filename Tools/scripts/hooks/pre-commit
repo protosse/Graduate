@@ -1,0 +1,26 @@
+#!/bin/sh
+
+echo "Running pre-commit Hook"
+
+ignoreHeader(){
+    output=$($PWD/Tools/scripts/git-format-staged --formatter "swiftformat stdin --config .swiftformat --header ignore --stdinpath {}" "**/Package.swift" 2>&1)
+    if [ $? -eq 1 ]
+    then
+        echo "$output"
+    fi
+}
+
+excludeFile() {
+    output=$($PWD/Tools/scripts/git-format-staged --formatter "swiftformat stdin --config .swiftformat --stdinpath {}" "*.swift" "!**/Package.swift" 2>&1)
+    if [ $? -eq 1 ]
+    then
+        echo "$output"
+    fi
+}
+
+echo "Swiftformat started"
+ignoreHeader
+excludeFile
+echo "✅ Swiftformat finished"
+
+# exit 1

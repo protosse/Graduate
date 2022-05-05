@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "iosMath",
+        "repositoryURL": "https://github.com/tophatmonocle/iosMath",
+        "state": {
+          "branch": null,
+          "revision": "8c65dab2295100c02d9d844f6dc5646ab9d57b42",
+          "version": "1.1.2"
+        }
+      }
+    ]
+  },
+  "version": 1
+}

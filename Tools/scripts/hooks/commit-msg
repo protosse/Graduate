@@ -1,0 +1,13 @@
+#!/bin/sh
+
+echo "Running commit-msg Hook"
+
+# INPUT_FILE=${1}
+# START_LINE=`head -n1 ${INPUT_FILE}`
+# PATTERN=`.*[A-Z]{2,}-[0-9]{1,}.*`
+# if ! [[ ${START_LINE} =~ ${PATTERN} ]]; then
+#     echo "❌ Bad commit message. Example: Fix-102 Some bug"
+#     exit 1
+# fi
+
+# exit 1

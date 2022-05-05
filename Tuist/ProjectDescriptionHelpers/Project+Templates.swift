@@ -5,7 +5,7 @@ public extension Project {
         name: String,
         product: Product,
         organizationName: String,
-        deploymentTarget: DeploymentTarget = .iOS(targetVersion: "14.0", devices: [.iphone, .ipad]),
+        deploymentTarget: DeploymentTarget = .iOS(targetVersion: "15.0", devices: [.iphone, .ipad]),
         infoPlist: [String: InfoPlist.Value] = [:],
         sources: SourceFilesList? = ["Sources/**"],
         resources: ResourceFileElements? = ["Resources/**"],
@@ -32,7 +32,10 @@ public extension Project {
                 }
                 + integrations.map {
                     .project(target: $0, path: .relativeToRoot("Integrations/\($0)"))
-                }
+                },
+            settings: .settings(base: [
+                "OTHER_LDFLAGS": "-Xlinker -interposable",
+            ])
         )
         targets.append(appTarget)
 

@@ -1,3 +1,4 @@
+import SwiftUI
 import UIKit
 
 @main
@@ -9,7 +10,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
         window = UIWindow(frame: UIScreen.main.bounds)
-        let viewController = ViewController()
+        let viewController = UIHostingController(rootView: RootTabView())
         window?.rootViewController = viewController
         window?.makeKeyAndVisible()
 

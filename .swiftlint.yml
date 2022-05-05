@@ -1,1 +1,17 @@
-reporter: "xcode"
+included:
+  - Projects
+excluded:
+  - Carthage
+  - Pods
+  - Frameworks
+  - build
+  - Tuist
+  - Derived/*
+analyzer_rules:
+  - unused_declaration
+  - unused_import
+disabled_rules:
+  - identifier_name
+  - trailing_comma
+  - force_try
+line_length: 180

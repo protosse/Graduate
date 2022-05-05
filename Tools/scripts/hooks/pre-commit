@@ -18,9 +18,31 @@ excludeFile() {
     fi
 }
 
-echo "Swiftformat started"
+which -s swiftformat
+if [ $? != 0 ] ; then
+    echo "❌ swiftformat is not installed"
+    exit 0
+fi
+
+echo "Swiftformat started..."
 ignoreHeader
 excludeFile
 echo "✅ Swiftformat finished"
+
+which -s swiftlint
+if [ $? != 0 ] ; then
+    echo "❌ swiftlint is not installed"
+    exit 0
+fi
+
+echo "Swiftlint started..."
+swiftlint --quiet --config .swiftlint.yml --strict
+
+if [ $? -ne 0 ]; then
+    echo "❌ Swiftlint finished with errors"
+    exit 1
+fi
+
+echo "✅ Swiftlint finished"
 
 # exit 1

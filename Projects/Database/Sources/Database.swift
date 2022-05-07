@@ -18,10 +18,10 @@ public class Database {
             let dbURL = folderURL.appendingPathComponent("db.sqlite")
             log.debug(dbURL)
 
-            let config = Configuration()
-//            config.prepareDatabase { db in
-//                try db.usePassphrase("8!|V8yGcDrP-m0x4rB,f")
-//            }
+            var config = Configuration()
+            config.prepareDatabase { db in
+                try db.usePassphrase("8!|V8yGcDrP-m0x4rB,f")
+            }
             let dbPool = try DatabasePool(path: dbURL.path, configuration: config)
 
             dbWriter = dbPool
@@ -63,8 +63,8 @@ public class Database {
     }
 }
 
-public extension Database {
-    func syncPapers(_ papers: [Paper]) throws {
+extension Database {
+    public func syncPapers(_ papers: [Paper]) throws {
         try dbWriter.write { db in
             for var paper in papers {
                 if try paper.exists(db) {
@@ -98,7 +98,7 @@ public extension Database {
         }
     }
 
-    func papers() -> [Paper] {
+    public func papers() -> [Paper] {
         var papers: [Paper] = []
         try? dbWriter.read { db in
             papers = try Paper.fetchAll(db)

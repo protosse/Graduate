@@ -7,13 +7,16 @@ public extension Project {
         organizationName: String,
         deploymentTarget: DeploymentTarget = .iOS(targetVersion: "15.0", devices: [.iphone, .ipad]),
         infoPlist: [String: InfoPlist.Value] = [:],
+        header: Headers? = nil,
         sources: SourceFilesList? = ["Sources/**"],
         resources: ResourceFileElements? = ["Resources/**"],
         testSources: SourceFilesList? = ["Tests/**"],
         dependencies: [TargetDependency] = [],
         module: [String] = [],
         packages: [Package] = [],
-        integrations: [String] = []
+        integrations: [String] = [],
+        settings: Settings? = nil,
+        additionalFiles: [FileElement] = []
     ) -> Project {
         var targets = [Target]()
 
@@ -26,6 +29,7 @@ public extension Project {
             infoPlist: .extendingDefault(with: infoPlist),
             sources: sources,
             resources: resources,
+            headers: header,
             dependencies: dependencies
                 + module.map {
                     .project(target: $0, path: .relativeToRoot("Projects/\($0)"))
@@ -33,9 +37,7 @@ public extension Project {
                 + integrations.map {
                     .project(target: $0, path: .relativeToRoot("Integrations/\($0)"))
                 },
-            settings: .settings(base: [
-                "OTHER_LDFLAGS": "-Xlinker -interposable",
-            ])
+            settings: settings
         )
         targets.append(appTarget)
 
@@ -59,7 +61,8 @@ public extension Project {
             name: name,
             organizationName: organizationName,
             packages: packages,
-            targets: targets
+            targets: targets,
+            additionalFiles: additionalFiles
         )
     }
 }

@@ -1,7 +1,7 @@
 import AttributedString
 import Down
 import Foundation
-import MathRender
+import iosMath
 
 public class MathParser {
     public enum Style: String {

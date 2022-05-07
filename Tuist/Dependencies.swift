@@ -20,6 +20,10 @@ let dependencies = Dependencies(
                     requirement: .upToNextMajor(from: "3.0.0")),
             .remote(url: "https://github.com/krzysztofzablocki/Inject.git",
                     requirement: .upToNextMajor(from: "1.0.0")),
+            .remote(url: "https://github.com/protosse/GRDB.swift",
+                    requirement: .branch("master")),
+             .remote(url: "https://github.com/tophatmonocle/iosMath.git",
+                    requirement: .upToNextMajor(from: "1.1.2")),
         ]
     ),
     platforms: [.iOS]

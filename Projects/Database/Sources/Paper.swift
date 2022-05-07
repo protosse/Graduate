@@ -27,16 +27,16 @@ extension Paper: Codable, FetchableRecord, MutablePersistableRecord {
     }
 }
 
-public extension Paper {
-    static let pivots = hasMany(PaperCategoryPivot.self)
-    static let categories = hasMany(PaperCategory.self, through: pivots, using: PaperCategoryPivot.paperCategory)
-    var categoriesRequest: QueryInterfaceRequest<PaperCategory> {
+extension Paper {
+    public static let pivots = hasMany(PaperCategoryPivot.self)
+    public static let categories = hasMany(PaperCategory.self, through: pivots, using: PaperCategoryPivot.paperCategory)
+    public var categoriesRequest: QueryInterfaceRequest<PaperCategory> {
         request(for: Paper.categories)
     }
 }
 
-public extension DerivableRequest where RowDecoder == Paper {
-    func orderByName() -> Self {
+extension DerivableRequest where RowDecoder == Paper {
+    public func orderByName() -> Self {
         order(Paper.Columns.title.collating(.localizedCaseInsensitiveCompare))
     }
 }

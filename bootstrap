@@ -36,7 +36,7 @@ brew_install "xcbeautify"
 brew_install "carthage"
 
 which -s tuist
-if [ $? -eq 0 ]; then
+if [ $? != 0 ]; then
     curl -Ls https://install.tuist.io | bash
 fi
 

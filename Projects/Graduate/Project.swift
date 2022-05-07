@@ -25,5 +25,8 @@ let project = Project.common(
         "Database",
         "MathParser",
         "Logger",
-    ]
+    ],
+    settings: .settings(base: [
+        "OTHER_LDFLAGS": "-Xlinker -interposable",
+    ])
 )

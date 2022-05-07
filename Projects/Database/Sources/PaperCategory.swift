@@ -18,10 +18,10 @@ extension PaperCategory: Codable, FetchableRecord, MutablePersistableRecord {
     }
 }
 
-public extension PaperCategory {
-    static let pivots = hasMany(PaperCategoryPivot.self)
-    static let papers = hasMany(Paper.self, through: pivots, using: PaperCategoryPivot.paper)
-    var papersRequest: QueryInterfaceRequest<Paper> {
+extension PaperCategory {
+    public static let pivots = hasMany(PaperCategoryPivot.self)
+    public static let papers = hasMany(Paper.self, through: pivots, using: PaperCategoryPivot.paper)
+    public var papersRequest: QueryInterfaceRequest<Paper> {
         request(for: PaperCategory.papers)
     }
 }

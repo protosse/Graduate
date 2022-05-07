@@ -10,8 +10,6 @@ let project = Project.common(
     dependencies: [
         .external(name: "Down"),
         .external(name: "AttributedString"),
-    ],
-    integrations: [
-        "MathIntegration",
+        .external(name: "iosMath"),
     ]
 )

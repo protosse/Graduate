@@ -8,10 +8,10 @@ let project = Project.common(
     product: .framework,
     organizationName: "doom",
     resources: nil,
-    module: [
-        "Logger",
+    dependencies: [
+        .external(name: "GRDB"),
     ],
-    integrations: [
-        "GRDBIntegration",
+    module: [
+        "Logger"
     ]
 )

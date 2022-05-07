@@ -1,1 +1,2 @@
 --disable wrapMultilineStatementBraces
+--extensionacl on-declarations

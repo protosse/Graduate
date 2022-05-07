@@ -9,8 +9,9 @@ extension Api: TargetType {
     var baseURL: URL {
         #if targetEnvironment(simulator)
             return URL(string: "http://0.0.0.0:8080/api")!
+        #else
+            return URL(string: "http://192.168.0.189:8080/api")!
         #endif
-        return URL(string: "http://192.168.0.189:8080/api")!
     }
 
     var path: String {

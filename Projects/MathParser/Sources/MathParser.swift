@@ -3,7 +3,7 @@ import Down
 import Foundation
 import iosMath
 
-public class MathParser {
+public class MathParser: TextParser {
     public enum Style: String {
         case `default`
         case default_dark
@@ -19,16 +19,19 @@ public class MathParser {
 
     public var style: Style
 
-    private var regexMath = try! NSRegularExpression(pattern: "(?<!\\$)(\\${1,3})([^\\$\n]+?)\\1(?!\\$)", options: [])
+    private var regex = try! NSRegularExpression(pattern: "(\\$)([^\\1]+?)\\1", options: [.ignoreMetacharacters])
 
     public init(style: Style = .default) {
         self.style = style
     }
 
-    public func parse(string: String) -> NSAttributedString? {
-        let down = Down(markdownString: string)
+    public func parseText(_ text: NSMutableAttributedString?) -> Bool {
+        guard let text = text, text.length > 0 else {
+            return false
+        }
+        let down = Down(markdownString: text.string)
         guard let re = try? down.toAttributedString(.default, stylesheet: style.css) else {
-            return nil
+            return false
         }
 
         let attr = NSMutableAttributedString(attributedString: re)
@@ -37,12 +40,12 @@ public class MathParser {
         var cutLength = 0
         let label = MTMathUILabel()
         label.contentInsets = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
-        regexMath.enumerateMatches(in: str, range: NSRange(location: 0, length: str.count)) { result, _, _ in
+        regex.enumerateMatches(in: str, range: NSRange(location: 0, length: str.count)) { result, _, _ in
             if let result = result, result.range.length > 0, result.numberOfRanges > 2 {
                 var range = result.range
                 range.location -= cutLength
-                let textColor = attr.attribute(.foregroundColor, at: range.location, effectiveRange: nil) as? UIColor ?? .black
-                let font = attr.attribute(.font, at: range.location, effectiveRange: nil) as? UIFont ?? .systemFont(ofSize: 15)
+                let textColor = attr.foregroundColor(at: range.location)
+                let font = attr.font(at: range.location)
 
                 let latex = str.subString(withNSRange: result.range(at: 2))
                 label.textColor = textColor
@@ -64,7 +67,8 @@ public class MathParser {
                 }
             }
         }
-        return attr
+        text.setAttributedString(attr)
+        return true
     }
 
     /// 有些需要特殊处理
@@ -93,22 +97,5 @@ public class MathParser {
         }
         UIGraphicsEndImageContext()
         return UIImage(cgImage: cgImage, scale: UIScreen.main.scale, orientation: image.imageOrientation)
-    }
-}
-
-public extension String {
-    func subString(withNSRange range: NSRange) -> String {
-        return subString(start: range.location, end: range.location + range.length)
-    }
-
-    func subString(start: Int, end: Int) -> String {
-        #if swift(>=5.0)
-            let startIndex = String.Index(utf16Offset: start, in: self)
-            let endIndex = String.Index(utf16Offset: end, in: self)
-        #else
-            let startIndex = String.Index(encodedOffset: start)
-            let endIndex = String.Index(encodedOffset: end)
-        #endif
-        return String(self[startIndex ..< endIndex])
     }
 }

@@ -5,7 +5,7 @@ public extension Project {
         name: String,
         product: Product,
         organizationName: String,
-        deploymentTarget: DeploymentTarget = .iOS(targetVersion: "15.0", devices: [.iphone, .ipad]),
+        deploymentTarget: DeploymentTarget = .iOS(targetVersion: "14.0", devices: [.iphone, .ipad]),
         infoPlist: [String: InfoPlist.Value] = [:],
         header: Headers? = nil,
         sources: SourceFilesList? = ["Sources/**"],

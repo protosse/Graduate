@@ -19,7 +19,7 @@ public class MathParser: TextParser {
 
     public var style: Style
 
-    private var regex = try! NSRegularExpression(pattern: "(\\$)([^\\1]+?)\\1", options: [.ignoreMetacharacters])
+    var regex = try! NSRegularExpression(pattern: #"(\$)(.*?)\1"#, options: [])
 
     public init(style: Style = .default) {
         self.style = style

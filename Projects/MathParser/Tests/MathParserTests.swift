@@ -4,7 +4,7 @@ import XCTest
 @testable import MathParser
 
 final class MathParserTests: XCTestCase {
-    private var mathParser = MathParser()
+    private var mathParser = LatexParser()
 
     func testMathRegex() {
         // Given

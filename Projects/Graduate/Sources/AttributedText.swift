@@ -1,10 +1,11 @@
+import AttributedString
 import SwiftUI
 import UIKit
 
 public struct AttributedText: UIViewRepresentable {
-    @Binding var attributedText: NSAttributedString
+    @Binding var attributedText: ASAttributedString
 
-    public init(_ attributedText: Binding<NSAttributedString>) {
+    public init(_ attributedText: Binding<ASAttributedString>) {
         _attributedText = attributedText
     }
 
@@ -16,6 +17,6 @@ public struct AttributedText: UIViewRepresentable {
     }
 
     public func updateUIView(_ uiView: UITextView, context _: Context) {
-        uiView.attributedText = attributedText
+        uiView.attributed.text = attributedText
     }
 }

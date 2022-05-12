@@ -19,7 +19,8 @@ let project = Project.common(
     dependencies: [
         .external(name: "PinLayout"),
         .external(name: "Inject"),
-        .external(name: "AttributedString"),
+        // big problem
+        // .external(name: "AttributedString"),
     ],
     module: [
         "Networking",

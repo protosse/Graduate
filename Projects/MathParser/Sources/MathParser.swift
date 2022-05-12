@@ -23,10 +23,10 @@ public class MathParser {
 
     public var style: Style
 
-    lazy var mathParser = LatexParser()
+    lazy var latexParser = LatexParser()
     lazy var questionParser = QuestionParser()
 
-    lazy var parser: [MathParserProtocal] = [mathParser, questionParser]
+    lazy var parser: [MathParserProtocal] = [latexParser, questionParser]
 
     public init(style: Style = .default) {
         self.style = style

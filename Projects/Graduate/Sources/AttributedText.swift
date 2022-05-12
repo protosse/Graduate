@@ -11,8 +11,8 @@ public struct AttributedText: UIViewRepresentable {
 
     public func makeUIView(context _: Context) -> UITextView {
         let textView = UITextView()
-        textView.isUserInteractionEnabled = true
         textView.isEditable = false
+        textView.isSelectable = false
         return textView
     }
 

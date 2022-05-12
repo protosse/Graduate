@@ -9,11 +9,10 @@ public class LatexParser: MathParserProtocal {
     public init() {}
 
     public func parseText(_ text: ASAttributedString?) -> ASAttributedString? {
-        guard let text = text, text.length > 0 else {
+        guard var text = text, text.length > 0 else {
             return nil
         }
 
-        let attr = NSMutableAttributedString(attributedString: text.value)
         let str = text.value.string
 
         var cutLength = 0
@@ -33,21 +32,14 @@ public class LatexParser: MathParserProtocal {
                 label.sizeToFit()
 
                 if let image = getImage(from: label) {
-                    let icon = NSTextAttachment(image: image)
-                    icon.bounds = CGRect(
-                        x: 0,
-                        y: (font.capHeight - image.size.height).rounded() / 2,
-                        width: image.size.width,
-                        height: image.size.height
-                    )
-                    let iconString = NSAttributedString(attachment: icon)
-                    attr.replaceCharacters(in: range, with: iconString)
+                    let imageString = ASAttributedString(.image(image, .original(.center)))
+                    text.replace(in: range, with: imageString)
                     cutLength += range.length - 1
                 }
             }
         }
 
-        return ASAttributedString(attr)
+        return text
     }
 
     /// 有些需要特殊处理

@@ -52,6 +52,8 @@ extension Project {
                 sources: testSources,
                 dependencies: [
                     .target(name: "\(name)"),
+                    .external(name: "Quick"),
+                    .external(name: "Nimble"),
                 ]
             )
             targets.append(testTarget)

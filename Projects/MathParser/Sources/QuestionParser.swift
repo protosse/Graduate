@@ -55,8 +55,7 @@ public class QuestionParser: MathParserProtocal {
                     var range = result.range
                     range.location -= cutLength
 
-                    let param = str.subString(withNSRange: result.range(at: 2))
-                    let value = str.subString(withNSRange: result.range(at: 3))
+                    let (param, value) = paramAndValue(from: str, checkingResult: result)
                     let attributes = text.value.attributes(at: range.location, effectiveRange: nil)
 
                     switch type {
@@ -76,6 +75,11 @@ public class QuestionParser: MathParserProtocal {
         }
 
         return text
+    }
+
+    func paramAndValue(from string: String, checkingResult: NSTextCheckingResult) -> (String, String) {
+        let temp = [2, 3].map { string.subString(withNSRange: checkingResult.range(at: $0)) }
+        return (temp[0], temp[1])
     }
 }
 

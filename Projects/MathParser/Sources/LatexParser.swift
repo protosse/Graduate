@@ -25,7 +25,7 @@ public class LatexParser: MathParserProtocal {
                 let textColor = text.value.foregroundColor(at: range.location)
                 let font = text.value.font(at: range.location)
 
-                let latex = str.subString(withNSRange: result.range(at: 2))
+                let latex = latex(from: str, checkingResult: result)
                 label.textColor = textColor
                 label.fontSize = font.pointSize + 3
                 label.latex = renderLatex(latex)
@@ -40,6 +40,10 @@ public class LatexParser: MathParserProtocal {
         }
 
         return text
+    }
+
+    func latex(from string: String, checkingResult: NSTextCheckingResult) -> String {
+        string.subString(withNSRange: checkingResult.range(at: 2))
     }
 
     /// 有些需要特殊处理

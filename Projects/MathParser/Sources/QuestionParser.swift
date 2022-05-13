@@ -2,7 +2,7 @@ import AttributedString
 import UIKit
 
 public protocol QuestionParserDelegate: AnyObject {
-    func questionParserDidClick(_ entity: ChoiceEntity, range: NSRange)
+    func questionParserChoiceDidClick(_ entity: ChoiceEntity, range: NSRange)
 }
 
 public class QuestionParser: MathParserProtocal {
@@ -65,8 +65,7 @@ public class QuestionParser: MathParserProtocal {
                             let placeHolder = "choice"
                             let attrRange = NSRange(location: range.location, length: placeHolder.count)
                             let attr = ASAttributedString("\(placeHolder)", .custom(attributes), .action { [weak self] in
-                                print("choice click")
-                                self?.delegate?.questionParserDidClick(entity, range: attrRange)
+                                self?.delegate?.questionParserChoiceDidClick(entity, range: attrRange)
                             })
                             text.replace(in: range, with: attr)
                             cutLength += range.length - attrRange.length

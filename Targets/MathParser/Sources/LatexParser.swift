@@ -3,7 +3,7 @@ import Down
 import Foundation
 import iosMath
 
-public class LatexParser: MathParserProtocal {
+public class LatexParser: MathParserProtocol {
     var regex = try! NSRegularExpression(pattern: #"(\$)(.*?)\1"#, options: [])
 
     public init() {}

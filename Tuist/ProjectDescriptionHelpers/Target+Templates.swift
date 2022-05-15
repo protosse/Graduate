@@ -1,23 +1,20 @@
 import ProjectDescription
 
-extension Project {
+extension Target {
     public static func common(
         name: String,
-        product: Product,
-        organizationName: String,
+        organizationName: String = "doom",
+        product: Product = .framework,
         deploymentTarget: DeploymentTarget = .iOS(targetVersion: "14.0", devices: [.iphone, .ipad]),
         infoPlist: [String: InfoPlist.Value] = [:],
+        path: String = "Targets",
         header: Headers? = nil,
-        sources: SourceFilesList? = ["Sources/**"],
-        resources: ResourceFileElements? = ["Resources/**"],
-        testSources: SourceFilesList? = ["Tests/**"],
+        sources: [String] = ["Sources/**"],
+        resources: [String]? = ["Resources/**"],
+        testSources: [String]? = ["Tests/**"],
         dependencies: [TargetDependency] = [],
-        module: [String] = [],
-        packages: [Package] = [],
-        integrations: [String] = [],
-        settings: Settings? = nil,
-        additionalFiles: [FileElement] = []
-    ) -> Project {
+        settings: Settings? = nil
+    ) -> [Target] {
         var targets = [Target]()
 
         let appTarget = Target(
@@ -27,16 +24,14 @@ extension Project {
             bundleId: "com.\(organizationName).\(name)",
             deploymentTarget: deploymentTarget,
             infoPlist: .extendingDefault(with: infoPlist),
-            sources: sources,
-            resources: resources,
+            sources: SourceFilesList(globs: sources.map {
+                "\(path)/\(name)/\($0)"
+            }),
+            resources: ResourceFileElements(resources: resources?.compactMap {
+                ResourceFileElement(stringLiteral: "\(path)/\(name)/\($0)")
+            } ?? []),
             headers: header,
-            dependencies: dependencies
-                + module.map {
-                    .project(target: $0, path: .relativeToRoot("Projects/\($0)"))
-                }
-                + integrations.map {
-                    .project(target: $0, path: .relativeToRoot("Integrations/\($0)"))
-                },
+            dependencies: dependencies,
             settings: settings
         )
         targets.append(appTarget)
@@ -49,7 +44,9 @@ extension Project {
                 bundleId: "com.\(organizationName).\(name)Tests",
                 deploymentTarget: deploymentTarget,
                 infoPlist: .default,
-                sources: testSources,
+                sources: SourceFilesList(globs: testSources.map {
+                    "\(path)/\(name)/\($0)"
+                }),
                 dependencies: [
                     .target(name: "\(name)"),
                     .external(name: "Quick"),
@@ -59,12 +56,6 @@ extension Project {
             targets.append(testTarget)
         }
 
-        return Project(
-            name: name,
-            organizationName: organizationName,
-            packages: packages,
-            targets: targets,
-            additionalFiles: additionalFiles
-        )
+        return targets
     }
 }

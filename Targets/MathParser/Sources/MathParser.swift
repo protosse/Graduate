@@ -2,7 +2,7 @@ import AttributedString
 import Down
 import Foundation
 
-public protocol MathParserProtocal {
+public protocol MathParserProtocol {
     @discardableResult
     func parseText(_ text: ASAttributedString?) -> ASAttributedString?
 }
@@ -23,16 +23,20 @@ public class MathParser {
 
     public var style: Style
 
-    lazy var latexParser = LatexParser()
-    lazy var questionParser = QuestionParser()
+    public lazy var latexParser = LatexParser()
+    public lazy var questionParser = QuestionParser()
 
-    lazy var parser: [MathParserProtocal] = [latexParser, questionParser]
+    public lazy var parser: [MathParserProtocol] = [latexParser, questionParser]
 
-    public init(style: Style = .default) {
+    public var originText: String?
+
+    public init(style: Style = .default, questionParserDelegate: QuestionParserDelegate? = nil) {
         self.style = style
+        questionParser.delegate = questionParserDelegate
     }
 
     public func parse(_ text: String?) -> ASAttributedString? {
+        originText = text
         guard let markDown = parse(markDown: text) else {
             return nil
         }

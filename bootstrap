@@ -34,6 +34,7 @@ brew_install "swiftlint"
 brew_install "swiftformat"
 brew_install "xcbeautify"
 brew_install "carthage"
+# brew_install "cocoapods"
 
 which -s tuist
 if [ $? != 0 ]; then
@@ -41,4 +42,5 @@ if [ $? != 0 ]; then
 fi
 
 tuist fetch
-tuist generate
+tuist generate -n
+# pod install

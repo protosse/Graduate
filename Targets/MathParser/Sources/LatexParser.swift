@@ -8,11 +8,8 @@ public class LatexParser: MathParserProtocol {
 
     public init() {}
 
-    public func parseText(_ text: ASAttributedString?) -> ASAttributedString? {
-        guard var text = text, text.length > 0 else {
-            return nil
-        }
-
+    public func parseText(_ text: ASAttributedString) -> ASAttributedString {
+        var text = text
         let str = text.value.string
 
         var cutLength = 0

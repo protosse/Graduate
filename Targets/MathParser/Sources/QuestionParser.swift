@@ -13,41 +13,19 @@ public class QuestionParser: MathParserProtocol {
             let pattern = #"\{(\#(self))\s+(.*)\}(.*?)\{\/\1\}"#
             return try! NSRegularExpression(pattern: pattern, options: [])
         }
-
-        public func transfer<T: Codable>(_ param: String, value: String) -> T? {
-            var dic = param.components(separatedBy: " ").map {
-                $0.components(separatedBy: "=")
-            }.reduce([String: String]()) { partialResult, group in
-                var partialResult = partialResult
-                if group.count == 2 {
-                    let key = group[0].trimmingCharacters(in: .whitespacesAndNewlines)
-                    let value = group[1].trimmingCharacters(in: .whitespacesAndNewlines)
-                    partialResult[key] = value
-                }
-                return partialResult
-            }
-
-            dic["value"] = value
-
-            guard let data = try? JSONSerialization.data(withJSONObject: dic),
-                  let model = try? JSONDecoder().decode(T.self, from: data) else {
-                return nil
-            }
-            return model
-        }
     }
 
     public class ChoiceConfig {
-        var circleColor: UIColor = .yellow
+        var circleColor: UIColor = .yellow.withAlphaComponent(0.2)
         var circleHighlightColor: UIColor = .red.withAlphaComponent(0.1)
         var circleCorrectColor: UIColor = .green.withAlphaComponent(0.5)
         var circleErrorColor: UIColor = .red.withAlphaComponent(0.5)
 
         var fontName: String = "GillSans"
-        var digitColor: UIColor = .black
-        var digitHighlightColor: UIColor = .black
-        var digiCorrectColor: UIColor = .black
-        var digiErrorColor: UIColor = .black
+        var textColor: UIColor = .black
+        var textHighlightColor: UIColor = .black
+        var textCorrectColor: UIColor = .black
+        var textErrorColor: UIColor = .black
     }
 
     public enum ChoiceType {
@@ -63,10 +41,8 @@ public class QuestionParser: MathParserProtocol {
 
     public init() {}
 
-    public func parseText(_ text: ASAttributedString?) -> ASAttributedString? {
-        guard var text = text, text.length > 0 else {
-            return nil
-        }
+    public func parseText(_ text: ASAttributedString) -> ASAttributedString {
+        var text = text
 
         let str = text.value.string
 
@@ -81,7 +57,7 @@ public class QuestionParser: MathParserProtocol {
 
                     switch type {
                     case .choice:
-                        if let entity: ChoiceEntity = type.transfer(param, value: value) {
+                        if let entity = ChoiceEntity.from(param: param, value: value) {
                             setChoice(text: &text, range: range, type: .normal, entity: entity)
                             cutLength += range.length - 1
                         }
@@ -103,26 +79,26 @@ public class QuestionParser: MathParserProtocol {
         let attrRange = NSRange(location: range.location, length: 1)
 
         let circleColor: UIColor
-        let digitColor: UIColor
+        let textColor: UIColor
         switch type {
         case .normal:
             circleColor = choiceConfig.circleColor
-            digitColor = choiceConfig.digitColor
+            textColor = choiceConfig.textColor
         case .highlight:
             circleColor = choiceConfig.circleHighlightColor
-            digitColor = choiceConfig.digitHighlightColor
+            textColor = choiceConfig.textHighlightColor
         case .correct:
             circleColor = choiceConfig.circleCorrectColor
-            digitColor = choiceConfig.digiCorrectColor
+            textColor = choiceConfig.textCorrectColor
         case .error:
             circleColor = choiceConfig.circleErrorColor
-            digitColor = choiceConfig.digiErrorColor
+            textColor = choiceConfig.textErrorColor
         }
 
-        let im = circleAroundDigit(
-            entity.id,
+        let im = circleAroundChar(
+            entity.value,
             circleColor: circleColor,
-            digitColor: digitColor,
+            textColor: textColor,
             font: UIFont(name: choiceConfig.fontName, size: font.pointSize)!
         )
 
@@ -133,17 +109,17 @@ public class QuestionParser: MathParserProtocol {
         text.replace(in: range, with: attr)
     }
 
-    private func circleAroundDigit(
-        _ num: String,
+    private func circleAroundChar(
+        _ text: String,
         circleColor: UIColor,
-        digitColor: UIColor,
+        textColor: UIColor,
         diameter: CGFloat? = nil,
         font: UIFont
     ) -> UIImage {
         let diameter = diameter ?? (font.pointSize + 10)
         let p = NSMutableParagraphStyle()
         p.alignment = .center
-        let s = NSAttributedString(string: num, attributes: [.font: font, .foregroundColor: digitColor, .paragraphStyle: p])
+        let s = NSAttributedString(string: text, attributes: [.font: font, .foregroundColor: textColor, .paragraphStyle: p])
         let r = UIGraphicsImageRenderer(size: CGSize(width: diameter, height: diameter))
         return r.image { con in
             circleColor.setFill()
@@ -154,6 +130,30 @@ public class QuestionParser: MathParserProtocol {
 }
 
 public struct ChoiceEntity: Codable {
-    public let id: String
+    public var id: String
     public var value: String
+    public var correct: Bool
+
+    static func from(param: String, value: String) -> ChoiceEntity? {
+        var dic: [String: Any] = param.components(separatedBy: " ").map {
+            $0.components(separatedBy: "=")
+        }.reduce([String: String]()) { partialResult, group in
+            var partialResult = partialResult
+            if group.count == 2 {
+                let key = group[0].trimmingCharacters(in: .whitespacesAndNewlines)
+                let value = group[1].trimmingCharacters(in: .whitespacesAndNewlines)
+                partialResult[key] = value
+            }
+            return partialResult
+        }
+
+        dic["value"] = value
+        dic["correct"] = dic["correct"] != nil
+
+        guard let data = try? JSONSerialization.data(withJSONObject: dic),
+              let model = try? JSONDecoder().decode(Self.self, from: data) else {
+            return nil
+        }
+        return model
+    }
 }

@@ -4,7 +4,7 @@ import Foundation
 
 public protocol MathParserProtocol {
     @discardableResult
-    func parseText(_ text: ASAttributedString?) -> ASAttributedString?
+    func parseText(_ text: ASAttributedString) -> ASAttributedString
 }
 
 public class MathParser {
@@ -35,13 +35,13 @@ public class MathParser {
         questionParser.delegate = questionParserDelegate
     }
 
-    public func parse(_ text: String?) -> ASAttributedString? {
+    public func parse(_ text: String) -> ASAttributedString? {
         originText = text
         guard let markDown = parse(markDown: text) else {
             return nil
         }
 
-        var attr: ASAttributedString? = ASAttributedString(markDown)
+        var attr = ASAttributedString(markDown)
 
         parser.forEach {
             attr = $0.parseText(attr)
@@ -50,11 +50,7 @@ public class MathParser {
         return attr
     }
 
-    func parse(markDown: String?) -> NSAttributedString? {
-        guard let markDown = markDown else {
-            return nil
-        }
-
+    func parse(markDown: String) -> NSAttributedString? {
         let down = Down(markdownString: markDown)
         guard let re = try? down.toAttributedString(.normalize, stylesheet: style.css) else {
             return nil

@@ -2,42 +2,14 @@ import AttributedString
 import UIKit
 
 public protocol QuestionParserDelegate: AnyObject {
-    func questionParserChoiceDidClick(_ entity: ChoiceEntity, range: NSRange)
+    func questionParserChoiceDidClick(_ entity: ChoiceItemEntity, range: NSRange)
 }
 
 public class QuestionParser: MathParserProtocol {
-    public enum QuestionType: String, CaseIterable {
-        case choice
-
-        public var regex: NSRegularExpression {
-            let pattern = #"\{(\#(self))\s+(.*)\}(.*?)\{\/\1\}"#
-            return try! NSRegularExpression(pattern: pattern, options: [])
-        }
-    }
-
-    public class ChoiceConfig {
-        var circleColor: UIColor = .yellow.withAlphaComponent(0.2)
-        var circleHighlightColor: UIColor = .red.withAlphaComponent(0.1)
-        var circleCorrectColor: UIColor = .green.withAlphaComponent(0.5)
-        var circleErrorColor: UIColor = .red.withAlphaComponent(0.5)
-
-        var fontName: String = "GillSans"
-        var textColor: UIColor = .black
-        var textHighlightColor: UIColor = .black
-        var textCorrectColor: UIColor = .black
-        var textErrorColor: UIColor = .black
-    }
-
-    public enum ChoiceType {
-        case normal
-        case highlight
-        case correct
-        case error
-    }
-
     weak var delegate: QuestionParserDelegate?
 
     public var choiceConfig = ChoiceConfig()
+    public var choiceEntitys = [String: ChoiceEntity]()
 
     public init() {}
 
@@ -47,6 +19,7 @@ public class QuestionParser: MathParserProtocol {
         let str = text.value.string
 
         var cutLength = 0
+        var choiceItems = [ChoiceItemEntity]()
         QuestionType.allCases.forEach { type in
             type.regex.enumerateMatches(in: str, range: NSRange(location: 0, length: str.count)) { result, _, _ in
                 if let result = result, result.range.length > 0, result.numberOfRanges > 2 {
@@ -54,16 +27,27 @@ public class QuestionParser: MathParserProtocol {
                     range.location -= cutLength
 
                     let (param, value) = paramAndValue(from: str, checkingResult: result)
-
                     switch type {
                     case .choice:
-                        if let entity = ChoiceEntity.from(param: param, value: value) {
-                            setChoice(text: &text, range: range, type: .normal, entity: entity)
+                        if let entity = ChoiceItemEntity.from(param: param, value: value) {
+                            text = setChoice(text: text, range: range, type: .normal, entity: entity)
                             cutLength += range.length - 1
+                            choiceItems.append(entity)
                         }
                     }
                 }
             }
+        }
+
+        choiceEntitys = choiceItems.reduce(into: [String: ChoiceEntity]()) { partialResult, item in
+            let entity = partialResult[item.id] ?? ChoiceEntity(id: item.id)
+            var items = entity.items
+            items.append(item)
+            var coreect = entity.correct
+            if item.correct {
+                coreect.append(item)
+            }
+            partialResult[item.id] = entity
         }
 
         return text
@@ -74,7 +58,8 @@ public class QuestionParser: MathParserProtocol {
         return (temp[0], temp[1])
     }
 
-    public func setChoice(text: inout ASAttributedString, range: NSRange, type: ChoiceType, entity: ChoiceEntity) {
+    public func setChoice(text: ASAttributedString, range: NSRange, type: ChoiceType, entity: ChoiceItemEntity) -> ASAttributedString {
+        var text = text
         let font = text.value.font(at: range.location)
         let attrRange = NSRange(location: range.location, length: 1)
 
@@ -107,6 +92,7 @@ public class QuestionParser: MathParserProtocol {
         }
 
         text.replace(in: range, with: attr)
+        return text
     }
 
     private func circleAroundChar(
@@ -126,34 +112,5 @@ public class QuestionParser: MathParserProtocol {
             con.cgContext.fillEllipse(in: CGRect(x: 0, y: 0, width: diameter, height: diameter))
             s.draw(in: CGRect(x: 0, y: diameter / 2 - font.lineHeight / 2, width: diameter, height: diameter))
         }
-    }
-}
-
-public struct ChoiceEntity: Codable {
-    public var id: String
-    public var value: String
-    public var correct: Bool
-
-    static func from(param: String, value: String) -> ChoiceEntity? {
-        var dic: [String: Any] = param.components(separatedBy: " ").map {
-            $0.components(separatedBy: "=")
-        }.reduce([String: String]()) { partialResult, group in
-            var partialResult = partialResult
-            if group.count == 2 {
-                let key = group[0].trimmingCharacters(in: .whitespacesAndNewlines)
-                let value = group[1].trimmingCharacters(in: .whitespacesAndNewlines)
-                partialResult[key] = value
-            }
-            return partialResult
-        }
-
-        dic["value"] = value
-        dic["correct"] = dic["correct"] != nil
-
-        guard let data = try? JSONSerialization.data(withJSONObject: dic),
-              let model = try? JSONDecoder().decode(Self.self, from: data) else {
-            return nil
-        }
-        return model
     }
 }

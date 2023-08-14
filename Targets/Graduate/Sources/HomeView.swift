@@ -12,7 +12,7 @@ struct HomeView: View {
     var body: some View {
         VStack {
             AttributedText($viewModel.content)
-            CanvasView(canvasView: $canvasView, onSaved: saveDrawing)
+//            CanvasView(canvasView: $canvasView, onSaved: saveDrawing)
         }
         .enableInjection()
     }

@@ -42,5 +42,5 @@ if [ $? != 0 ]; then
 fi
 
 tuist fetch
-tuist generate -n
+tuist generate
 # pod install

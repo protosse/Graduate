@@ -1,4 +1,5 @@
 import AttributedString
+import Combine
 import Down
 import Foundation
 
@@ -28,17 +29,20 @@ public class MathParser {
 
     public lazy var parser: [MathParserProtocol] = [latexParser, questionParser]
 
-    public var originText: String?
+    public var originText: String
+    public var content = CurrentValueSubject<ASAttributedString, Never>("")
 
-    public init(style: Style = .default, questionParserDelegate: QuestionParserDelegate? = nil) {
+    public init(style: Style = .default, text: String) {
         self.style = style
-        questionParser.delegate = questionParserDelegate
+        originText = text
+        content.send(parse(text))
+        questionParser.delegate = self
     }
 
-    public func parse(_ text: String) -> ASAttributedString? {
+    func parse(_ text: String) -> ASAttributedString {
         originText = text
         guard let markDown = parse(markDown: text) else {
-            return nil
+            return ""
         }
 
         var attr = ASAttributedString(markDown)
@@ -57,5 +61,12 @@ public class MathParser {
         }
 
         return re
+    }
+}
+
+extension MathParser: QuestionParserDelegate {
+    public func questionParserChoiceDidClick(_ entity: ChoiceItemEntity, range: NSRange) {
+        let value = questionParser.setChoice(text: content.value, range: range, type: .highlight, entity: entity)
+        content.send(value)
     }
 }

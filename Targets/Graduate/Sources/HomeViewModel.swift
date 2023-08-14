@@ -9,18 +9,11 @@ class HomeViewModel: ObservableObject {
     private var parser: MathParser!
 
     init() {
-        parser = MathParser(style: .default, questionParserDelegate: self)
         if let path = Bundle.main.url(forResource: "2022数学一", withExtension: "md"),
            let data = try? Data(contentsOf: path),
-           let text = String(data: data, encoding: .utf8),
-           let attr = parser.parse(text) {
-            content = attr
+           let text = String(data: data, encoding: .utf8) {
+            parser = MathParser(style: .default, text: text)
+            parser.content.assign(to: &$content)
         }
-    }
-}
-
-extension HomeViewModel: QuestionParserDelegate {
-    func questionParserChoiceDidClick(_ entity: ChoiceEntity, range: NSRange) {
-        parser.questionParser.setChoice(text: &content, range: range, type: .highlight, entity: entity)
     }
 }

@@ -18,10 +18,7 @@ public class Database {
             let dbURL = folderURL.appendingPathComponent("db.sqlite")
             log.debug(dbURL)
 
-            var config = Configuration()
-            config.prepareDatabase { db in
-                try db.usePassphrase("8!|V8yGcDrP-m0x4rB,f")
-            }
+            let config = Configuration()
             let dbPool = try DatabasePool(path: dbURL.path, configuration: config)
 
             dbWriter = dbPool
@@ -72,19 +69,15 @@ extension Database {
                     let linkedCategories = try paper.categoriesRequest.fetchAll(db)
                     let finalCategories = paper.categories
 
-                    for var cat in finalCategories {
-                        if !linkedCategories.contains(cat) {
-                            try cat.save(db)
-                            let pivot = PaperCategoryPivot(paperId: paper.id, paperCategoryId: cat.id)
-                            try pivot.save(db)
-                        }
+                    for var cat in finalCategories where !linkedCategories.contains(cat) {
+                        try cat.save(db)
+                        let pivot = PaperCategoryPivot(paperId: paper.id, paperCategoryId: cat.id)
+                        try pivot.save(db)
                     }
 
-                    for cat in linkedCategories {
-                        if !finalCategories.contains(cat) {
-                            let pivot = PaperCategoryPivot(paperId: paper.id, paperCategoryId: cat.id)
-                            try pivot.delete(db)
-                        }
+                    for cat in linkedCategories where !finalCategories.contains(cat) {
+                        let pivot = PaperCategoryPivot(paperId: paper.id, paperCategoryId: cat.id)
+                        try pivot.delete(db)
                     }
                 } else {
                     try paper.insert(db)

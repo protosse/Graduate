@@ -2,6 +2,7 @@ import AttributedString
 import Down
 import Foundation
 import iosMath
+import UIKit
 
 public class LatexParser: MathParserProtocol {
     var regex = try! NSRegularExpression(pattern: #"(\$)(.*?)\1"#, options: [])
@@ -55,8 +56,11 @@ public class LatexParser: MathParserProtocol {
         return latex
     }
 
-    private func getImage(from label: MTMathUILabel) -> UIImage? {
-        let size = CGSize(width: label.bounds.size.width, height: label.bounds.size.height)
+    private func getImage(from label: MTMathUILabel, size: CGSize? = nil) -> UIImage? {
+        let size = size ?? CGSize(width: label.bounds.size.width, height: label.bounds.size.height)
+        guard !size.equalTo(.zero) else {
+            return nil
+        }
         UIGraphicsBeginImageContextWithOptions(size, false, 0.0)
         guard let context = UIGraphicsGetCurrentContext() else {
             return nil

@@ -3,6 +3,7 @@ import Moya
 
 enum Api {
     case paperList
+    case none
 }
 
 extension Api: TargetType {
@@ -18,11 +19,13 @@ extension Api: TargetType {
         switch self {
         case .paperList:
             return "paper/list"
+        default:
+            return ""
         }
     }
 
     var parameters: [String: Any] {
-        var param = [String: Any]()
+        let param = [String: Any]()
         return param
     }
 
